@@ -1,0 +1,38 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+
+    box-sizing: border-box;
+}
+
+.page {
+    background-color: #F7F7F7;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 20px;
+
+    justify-content: space-between;
+
+    width: calc(65% - 8px);
+    max-width: calc(65% - 8px);
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 45px;
+    padding-right: 45px;
+    background-color: white;
+}
+
+.content__input {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.input {
+    height: 40px;
+    border-color: #D9D9D9;
+    font-size: 16px;
+}
