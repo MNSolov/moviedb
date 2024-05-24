@@ -1,0 +1,22 @@
+.error {
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 200px;
+    height: 130px;
+
+    padding: 20px;
+
+    border: 1px solid lightgray;
+}
+
+.error__text {
+    margin: 0;
+    
+    font-family: Inter, Arial, sans-serif;
+    font-size: 22px;
+    line-height: 28px;
+
+    color: red;
+    text-align: center;
+}

@@ -3,7 +3,8 @@ export default class ApiService {
     this.getFilms = async () => {
       const url = new URL('/3/search/movie', 'https://api.themoviedb.org')
       url.searchParams.set('query', 'back')
-      const responce = await fetch(url, {
+      let responce = null
+      responce = await fetch(url, {
         method: 'GET',
         headers: {
           Authorization:
@@ -11,11 +12,12 @@ export default class ApiService {
           accept: 'application/json',
         },
       })
+
       if (responce.ok) {
         const objectRespons = await responce.json()
         return objectRespons.results
       }
-      throw new Error(responce.status)
+      throw new TypeError(responce.status)
     }
   }
 }

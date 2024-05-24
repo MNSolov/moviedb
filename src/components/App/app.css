@@ -1,7 +1,6 @@
 html, body {
     margin: 0;
     padding: 0;
-    min-height: 100%;
 
     box-sizing: border-box;
 }
@@ -16,9 +15,11 @@ html, body {
     gap: 40px 20px;
 
     justify-content: space-between;
+    align-content: flex-start;
 
-    width: calc(65% - 8px);
+    /*width: calc(65% - 8px);*/
     max-width: calc(65% - 8px);
+    min-height: 100vh;
     margin-right: auto;
     margin-left: auto;
     padding-left: 45px;
@@ -35,4 +36,10 @@ html, body {
     height: 40px;
     border-color: #D9D9D9;
     font-size: 16px;
+}
+
+.spin {
+    position: fixed;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
 }
