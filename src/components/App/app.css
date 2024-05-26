@@ -10,6 +10,7 @@ html, body {
 }
 
 .content {
+    box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
     gap: 40px 20px;
@@ -18,12 +19,16 @@ html, body {
     align-content: flex-start;
 
     /*width: calc(65% - 8px);*/
-    max-width: calc(65% - 8px);
+    max-width: calc(70% - 8px);
     min-height: 100vh;
+    
     margin-right: auto;
     margin-left: auto;
+    
     padding-left: 45px;
     padding-right: 45px;
+    padding-bottom: 45px;
+
     background-color: white;
 }
 
@@ -42,4 +47,30 @@ html, body {
     position: fixed;
     top: calc(50% - 20px);
     left: calc(50% - 20px);
+}
+
+.pagination {
+    margin-left: auto;
+    margin-right: auto;
+
+    /*padding-left: 50px;
+    padding-right: 50px;*/
+}
+
+.pagination-wrapper {
+
+    width: 100%;
+    display: flex;
+
+    /*padding-left: 50px;
+    padding-right: 50px;*/
+}
+
+.not-found-films {
+    font-family: Inter, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+
+    margin-left: auto;
+    margin-right: auto;
 }

@@ -1,8 +1,10 @@
 export default class ApiService {
   constructor() {
-    this.getFilms = async () => {
+    this.getFilms = async (input, current) => {
       const url = new URL('/3/search/movie', 'https://api.themoviedb.org')
-      url.searchParams.set('query', 'back')
+      url.searchParams.set('query', input)
+      url.searchParams.set('language', 'ru')
+      url.searchParams.set('page', current)
       let responce = null
       responce = await fetch(url, {
         method: 'GET',
@@ -15,7 +17,7 @@ export default class ApiService {
 
       if (responce.ok) {
         const objectRespons = await responce.json()
-        return objectRespons.results
+        return objectRespons
       }
       throw new TypeError(responce.status)
     }

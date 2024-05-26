@@ -7,6 +7,25 @@ export default class FilmCard extends PureComponent {
   constructor() {
     super()
 
+    this.textHeaderClamp = (textHeader, headerFontSize, widthHeader, stringCount = 3) => {
+      if (textHeader.length > 50) {
+        const countSymbolString = widthHeader / headerFontSize
+        const lengthHeader = countSymbolString * stringCount
+
+        console.log(countSymbolString, lengthHeader)
+        const wordsHeader = textHeader.split(/\s/g)
+
+        let result = wordsHeader[0]
+        let i = 1
+        while (i < wordsHeader.length && result.length < lengthHeader) {
+          result += ` ${wordsHeader[i]}`
+          i += 1
+        }
+        return `${result}...`
+      }
+      return textHeader
+    }
+
     this.textOverviewClamp = (
       textHeader,
       headerFontSize,
@@ -45,15 +64,16 @@ export default class FilmCard extends PureComponent {
   render() {
     const { filmInfo } = this.props
 
+    const textHeaderClamp = this.textHeaderClamp(filmInfo.title, 20, 450 * 0.45)
     const textOverviewClamp = this.textOverviewClamp(
-      filmInfo.title,
+      textHeaderClamp,
       20,
       28,
       filmInfo.overView,
       12,
       22,
       450 * 0.45,
-      280,
+      220,
       450 * 0.5
     )
 
@@ -68,7 +88,7 @@ export default class FilmCard extends PureComponent {
       <div className="film-card">
         <img className="film-card__image" src={`https://image.tmdb.org/t/p/w500${filmInfo.posterPath}`} alt="Poster" />
         <div className="film-card__header">
-          <h5 className="film-card__title">{filmInfo.title}</h5>
+          <h5 className="film-card__title">{textHeaderClamp}</h5>
           <p className="film-card__release">{date}</p>
         </div>
         <p className="film-card__overview">{textOverviewClamp}</p>

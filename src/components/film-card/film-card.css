@@ -7,15 +7,15 @@
     align-items: flex-start;
     align-content: flex-start;
 
-    width: 451px;
-    max-height: 279px;
+    width: 450px;
+    height: 280px;
 
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 15%);
 }
 
 .film-card__header {
     padding-left: 10px;
-    width: 45%;
+    width: 43%;
 }
 
 .film-card__image {
@@ -28,7 +28,7 @@
     margin-top: 10px;
     font-family: Inter, Arial, sans-serif;
     font-size: 20px;
-    
+    line-height: 28px;
 }
 
 .film-card__release {
@@ -51,7 +51,6 @@
     white-space: pre-wrap;
     width: 50%;
 
-    height: 40%;
     overflow: hidden;
     flex-grow: 1.1;
 }
