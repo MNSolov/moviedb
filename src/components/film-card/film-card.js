@@ -1,18 +1,24 @@
 import React, { PureComponent } from 'react'
 import { format } from 'date-fns'
+import { Rate } from 'antd'
+
+import ApiService from '../apiservice'
 
 import './film-card.css'
 
 export default class FilmCard extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+
+    const { filmInfo } = props
+
+    this.state = { rating: filmInfo.rating }
 
     this.textHeaderClamp = (textHeader, headerFontSize, widthHeader, stringCount = 3) => {
       if (textHeader.length > 50) {
         const countSymbolString = widthHeader / headerFontSize
         const lengthHeader = countSymbolString * stringCount
 
-        console.log(countSymbolString, lengthHeader)
         const wordsHeader = textHeader.split(/\s/g)
 
         let result = wordsHeader[0]
@@ -59,10 +65,25 @@ export default class FilmCard extends PureComponent {
       }
       return result
     }
+
+    this.onRateChange = (event, filmId) => {
+      const { sessionId } = this.props
+      this.setState({ rating: event })
+      // onRateChange(filmId, event)
+      const api = new ApiService()
+      if (event > 0) {
+        api.addRatingMovie(sessionId, filmId, event)
+        sessionStorage.setItem(String(filmId), String(event))
+      } else {
+        api.deleteRatingMovie(sessionId, filmId)
+        sessionStorage.removeItem(String(filmId))
+      }
+    }
   }
 
   render() {
     const { filmInfo } = this.props
+    const { rating } = this.state
 
     const textHeaderClamp = this.textHeaderClamp(filmInfo.title, 20, 450 * 0.45)
     const textOverviewClamp = this.textOverviewClamp(
@@ -82,7 +103,7 @@ export default class FilmCard extends PureComponent {
       date = format(new Date(filmInfo.releaseDate), 'MMMM dd, yyyy')
     }
 
-    const rating = Number(filmInfo.voteAverage).toFixed(1)
+    const voteRating = Number(filmInfo.voteAverage).toFixed(1)
 
     return (
       <div className="film-card">
@@ -92,7 +113,13 @@ export default class FilmCard extends PureComponent {
           <p className="film-card__release">{date}</p>
         </div>
         <p className="film-card__overview">{textOverviewClamp}</p>
-        <p className="film-card__rating">{rating}</p>
+        <p className="film-card__rating">{voteRating}</p>
+        <Rate
+          className="film-card__stars"
+          count={10}
+          value={rating}
+          onChange={(event) => this.onRateChange(event, filmInfo.id)}
+        />
       </div>
     )
   }

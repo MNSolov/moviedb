@@ -11,15 +11,15 @@ html, body {
 
 .content {
     box-sizing: border-box;
+
     display: flex;
     flex-wrap: wrap;
     gap: 40px 20px;
 
     justify-content: space-between;
     align-content: flex-start;
-
     /*width: calc(65% - 8px);*/
-    max-width: calc(70% - 8px);
+    max-width: calc(77% - 8px);
     min-height: 100vh;
     
     margin-right: auto;
@@ -73,4 +73,19 @@ html, body {
 
     margin-left: auto;
     margin-right: auto;
+}
+
+.tabs {
+    width: 100%;
+}
+
+.tabs__content {
+    box-sizing: border-box;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 20px;
+
+    justify-content: space-between;
+    align-content: flex-start;
 }
