@@ -4,6 +4,7 @@ import { Input, Spin, Pagination, Tabs } from 'antd'
 import FilmCard from '../film-card/film-card'
 import ApiService from '../apiservice'
 import Error from '../error'
+import { Provider } from '../context'
 
 import './app.css'
 
@@ -22,6 +23,7 @@ export default class App extends PureComponent {
       sessionId: '',
       pagination: 1,
       paginationRate: 1,
+      genre: 0,
     }
 
     this.getSessionId = () => {
@@ -39,10 +41,56 @@ export default class App extends PureComponent {
       }
     }
 
+    this.getGenreObj = () => {
+      const api = new ApiService()
+      api.getGenre().then((response) => {
+        console.log(response)
+        this.setState({ genre: response.genres })
+      })
+    }
+
+    this.createFilmcard = (responce, current, sessionId, paginationChange) => {
+      const filmCards = responce.results.map((item) => {
+        let rating = 0
+        if (item.rating) {
+          sessionStorage.setItem(String(item.id), String(item.rating))
+          rating = item.rating
+        } else {
+          rating = sessionStorage.getItem(String(item.id))
+        }
+        const filmInfo = {
+          id: item.id,
+          rating,
+          title: item.title,
+          overView: item.overview,
+          posterPath: item.poster_path,
+          releaseDate: item.release_date,
+          voteAverage: item.vote_average,
+          genreId: item.genre_ids,
+        }
+        return <FilmCard key={item.id} filmInfo={filmInfo} sessionId={sessionId} />
+      })
+      return (
+        <>
+          {filmCards}
+          <div className="pagination-wrapper">
+            <Pagination
+              className="pagination"
+              current={current}
+              hideOnSinglePage="true"
+              total={responce.total_results}
+              defaultPageSize={20}
+              showSizeChanger={false}
+              onChange={(event) => paginationChange(event)}
+            />
+          </div>
+        </>
+      )
+    }
+
     this.sendRequest = (input, current = 1) => {
-      this.setState({ isLoading: true })
+      this.setState({ filmCards: null, isLoading: true })
       const { sessionId } = this.state
-      this.setState({ filmCards: null })
       const api = new ApiService()
       api
         .getFilms(input, current)
@@ -52,78 +100,43 @@ export default class App extends PureComponent {
             return <p className="not-found-films">Извините, фильмов с таким названием не найдено</p>
           }
           console.log('Поисковый запрос')
-          const filmCards = responce.results.map((item) => {
-            const filmInfo = {
-              id: item.id,
-              title: item.title,
-              overView: item.overview,
-              posterPath: item.poster_path,
-              releaseDate: item.release_date,
-              voteAverage: item.vote_average,
-              rating: sessionStorage.getItem(String(item.id)),
-            }
-            return <FilmCard key={item.id} filmInfo={filmInfo} sessionId={sessionId} />
-          })
-
-          return (
-            <>
-              {filmCards}
-              <div className="pagination-wrapper">
-                <Pagination
-                  className="pagination"
-                  current={current}
-                  hideOnSinglePage="true"
-                  total={responce.total_results}
-                  defaultPageSize={20}
-                  showSizeChanger={false}
-                  onChange={(event) => this.paginationChange(event)}
-                />
-              </div>
-            </>
-          )
+          return this.createFilmcard(responce, current, sessionId, this.paginationChange)
         })
         .then((filmCards) => this.setState({ filmCards, isLoading: false }))
         .catch(() => this.setState({ filmCards: null, isLoading: false, isError: true }))
     }
 
     this.sendRateRequest = (current = 1) => {
-      this.setState({ isLoading: true })
+      this.setState({ filmRateCards: null, isLoading: true })
+      const { sessionId, paginationRate } = this.state
+      const api = new ApiService()
+      api
+        .getRateFilms(sessionId, current)
+        .then((responce) => {
+          let result = 0
+          if (responce.total_pages < paginationRate) {
+            result = this.createFilmcard(responce, 1, sessionId, this.paginationRateChange)
+            this.setState({ paginationRate: 1, filmRateCards: result, isLoading: false })
+          } else {
+            api.getRateFilms(sessionId, paginationRate).then((responceRepeat) => {
+              result = this.createFilmcard(responceRepeat, paginationRate, sessionId, this.paginationRateChange)
+              this.setState({ filmRateCards: result, isLoading: false })
+            })
+          }
+        })
+        .catch(() => this.setState({ filmRateCards: null, isLoading: false }))
+    }
+
+    this.sendPaginationRateRequest = (current) => {
+      this.setState({ filmRateCards: null, isLoading: true })
       const { sessionId } = this.state
       const api = new ApiService()
       api
         .getRateFilms(sessionId, current)
         .then((responce) => {
-          const filmRateCards = responce.results.map((item) => {
-            sessionStorage.setItem(String(item.id), String(item.rating))
-            const filmInfo = {
-              id: item.id,
-              rating: item.rating,
-              title: item.title,
-              overView: item.overview,
-              posterPath: item.poster_path,
-              releaseDate: item.release_date,
-              voteAverage: item.vote_average,
-            }
-            return <FilmCard key={item.id} filmInfo={filmInfo} sessionId={sessionId} />
-          })
-          return (
-            <>
-              {filmRateCards}
-              <div className="pagination-wrapper">
-                <Pagination
-                  className="pagination"
-                  current={current}
-                  hideOnSinglePage="true"
-                  total={responce.total_results}
-                  defaultPageSize={20}
-                  showSizeChanger={false}
-                  onChange={(event) => this.paginationRateChange(event)}
-                />
-              </div>
-            </>
-          )
+          const result = this.createFilmcard(responce, current, sessionId, this.paginationRateChange)
+          this.setState({ filmRateCards: result, isLoading: false })
         })
-        .then((filmRateCards) => this.setState({ filmRateCards, isLoading: false }))
         .catch(() => this.setState({ filmRateCards: null, isLoading: false }))
     }
 
@@ -142,7 +155,7 @@ export default class App extends PureComponent {
 
     this.paginationRateChange = (event) => {
       this.setState({ paginationRate: event })
-      this.sendRateRequest(event)
+      this.sendPaginationRateRequest(event)
     }
 
     this.tabsOnChange = (event) => {
@@ -151,18 +164,18 @@ export default class App extends PureComponent {
         this.sendRequest(input, pagination)
       }
       if (event === '2') {
-        const { paginationRate } = this.state
-        this.sendRateRequest(paginationRate)
+        this.sendRateRequest()
       }
     }
   }
 
   componentDidMount() {
     this.getSessionId()
+    this.getGenreObj()
   }
 
   render() {
-    const { filmCards, filmRateCards, isLoading, isError } = this.state
+    const { filmCards, filmRateCards, isLoading, isError, genre } = this.state
 
     const spin = isLoading ? <Spin className="spin" size="large" /> : null
     const errorMessage = isError ? <Error>Не удается загрузить фильмы! Видимо возникла ошибка</Error> : null
@@ -201,7 +214,9 @@ export default class App extends PureComponent {
 
     return (
       <section className="content">
-        <Tabs className="tabs" centered items={items} onChange={(event) => this.tabsOnChange(event)} />
+        <Provider value={genre}>
+          <Tabs className="tabs" centered items={items} onChange={(event) => this.tabsOnChange(event)} />
+        </Provider>
       </section>
     )
   }

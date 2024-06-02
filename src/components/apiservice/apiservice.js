@@ -105,5 +105,25 @@ export default class ApiService {
       }
       throw new TypeError(responce.status)
     }
+
+    this.getGenre = async () => {
+      const url = new URL('/3/genre/movie/list', 'https://api.themoviedb.org')
+      url.searchParams.set('language', 'ru')
+
+      const responce = await fetch(url, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOThhMjU1NGFlODJjNzI1OWIxODMwODZhZDIwYjQ2OSIsInN1YiI6IjY2NGEyM2IwNjRlMzQwODE4Zjc5MTlmNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ljp_uBmt-7JNYlG7g3eIYjJIXP0ynR1UU3BlvTxKGQg',
+        },
+      })
+
+      if (responce.ok) {
+        const objectRespons = await responce.json()
+        return objectRespons
+      }
+      throw new TypeError(responce.status)
+    }
   }
 }

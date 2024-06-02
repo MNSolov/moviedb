@@ -102,3 +102,30 @@
     margin-bottom: 20px;
     padding-left: 10px;
 }
+
+.film-card__genre-list {
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
+    padding-left: 10px;
+
+    width: 50%;
+
+    list-style-type: none;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.film-card__genre-item {
+    padding: 3px;
+
+    background-color: #FAFAFA;
+    opacity: 65%;
+    border: 1px solid #D9D9D9;
+    border-radius: 3px;
+    
+    font-family: Inter, Arial, sans-serif;
+    font-size: 12px;
+}
