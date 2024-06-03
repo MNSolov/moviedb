@@ -32,10 +32,13 @@ export default class App extends PureComponent {
       const guestSessionId = sessionStorage.getItem('tmdbGuestSessionId')
 
       if (!guestSessionId) {
-        api.createGuestSession().then((response) => {
-          sessionStorage.setItem('tmdbGuestSessionId', response.guest_session_id)
-          this.setState({ sessionId: response.guest_session_id })
-        })
+        api
+          .createGuestSession()
+          .then((response) => {
+            sessionStorage.setItem('tmdbGuestSessionId', response.guest_session_id)
+            this.setState({ sessionId: response.guest_session_id })
+          })
+          .catch(() => this.setState({ isError: true }))
       } else {
         this.setState({ sessionId: guestSessionId })
       }
@@ -43,10 +46,13 @@ export default class App extends PureComponent {
 
     this.getGenreObj = () => {
       const api = new ApiService()
-      api.getGenre().then((response) => {
-        console.log(response)
-        this.setState({ genre: response.genres })
-      })
+      api
+        .getGenre()
+        .then((response) => {
+          console.log(response)
+          this.setState({ genre: response.genres })
+        })
+        .catch(() => this.setState({ isError: true }))
     }
 
     this.createFilmcard = (responce, current, sessionId, paginationChange) => {
@@ -102,8 +108,9 @@ export default class App extends PureComponent {
           console.log('Поисковый запрос')
           return this.createFilmcard(responce, current, sessionId, this.paginationChange)
         })
-        .then((filmCards) => this.setState({ filmCards, isLoading: false }))
-        .catch(() => this.setState({ filmCards: null, isLoading: false, isError: true }))
+        .then((filmCards) => this.setState({ filmCards, isError: false }))
+        .catch(() => this.setState({ filmCards: null, isError: true }))
+        .finally(() => this.setState({ isLoading: false }))
     }
 
     this.sendRateRequest = (current = 1) => {
@@ -120,11 +127,12 @@ export default class App extends PureComponent {
           } else {
             api.getRateFilms(sessionId, paginationRate).then((responceRepeat) => {
               result = this.createFilmcard(responceRepeat, paginationRate, sessionId, this.paginationRateChange)
-              this.setState({ filmRateCards: result, isLoading: false })
+              this.setState({ filmRateCards: result, isError: false })
             })
           }
         })
-        .catch(() => this.setState({ filmRateCards: null, isLoading: false }))
+        .catch(() => this.setState({ filmRateCards: null }))
+        .finally(() => this.setState({ isLoading: false }))
     }
 
     this.sendPaginationRateRequest = (current) => {
@@ -135,9 +143,10 @@ export default class App extends PureComponent {
         .getRateFilms(sessionId, current)
         .then((responce) => {
           const result = this.createFilmcard(responce, current, sessionId, this.paginationRateChange)
-          this.setState({ filmRateCards: result, isLoading: false })
+          this.setState({ filmRateCards: result, isError: false })
         })
-        .catch(() => this.setState({ filmRateCards: null, isLoading: false }))
+        .catch(() => this.setState({ filmRateCards: null }))
+        .finally(() => this.setState({ isLoading: false }))
     }
 
     this.debounceSend = debounce(this.sendRequest, 700)
@@ -178,7 +187,9 @@ export default class App extends PureComponent {
     const { filmCards, filmRateCards, isLoading, isError, genre } = this.state
 
     const spin = isLoading ? <Spin className="spin" size="large" /> : null
-    const errorMessage = isError ? <Error>Не удается загрузить фильмы! Видимо возникла ошибка</Error> : null
+    const errorMessage = isError ? (
+      <Error>Не удается получить информацию от сервера! Видимо возникла ошибка</Error>
+    ) : null
     const films = !(isLoading && isError) ? filmCards : null
     const filmsRate = !(isLoading && isError) ? filmRateCards : null
 

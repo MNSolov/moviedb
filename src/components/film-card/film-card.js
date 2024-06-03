@@ -15,8 +15,17 @@ export default class FilmCard extends PureComponent {
 
     this.state = { rating: filmInfo.rating }
 
+    this.borderColor = (rating) => {
+      const borderStyle = { borderColor: 0 }
+      if (rating >= 0 && rating <= 3) borderStyle.borderColor = '#E90000'
+      if (rating > 3 && rating <= 5) borderStyle.borderColor = '#E97E00'
+      if (rating > 5 && rating <= 7) borderStyle.borderColor = '#E9D100'
+      if (rating > 7) borderStyle.borderColor = '#66E900'
+      return borderStyle
+    }
+
     this.textHeaderClamp = (textHeader, headerFontSize, widthHeader, stringCount = 2) => {
-      if (textHeader.length > 40) {
+      if (textHeader.length > 30) {
         const countSymbolString = widthHeader / headerFontSize
         const lengthHeader = countSymbolString * stringCount
 
@@ -127,12 +136,14 @@ export default class FilmCard extends PureComponent {
         <div className="film-card__header">
           <h5 className="film-card__title">{textHeaderClamp}</h5>
           <p className="film-card__release">{date}</p>
+          <Consumer>
+            {(genre) => <ul className="film-card__genre-list">{this.createGenreList(genre, filmInfo.genreId)}</ul>}
+          </Consumer>
         </div>
-        <Consumer>
-          {(genre) => <ul className="film-card__genre-list">{this.createGenreList(genre, filmInfo.genreId)}</ul>}
-        </Consumer>
         <p className="film-card__overview">{textOverviewClamp}</p>
-        <p className="film-card__rating">{voteRating}</p>
+        <div style={this.borderColor(filmInfo.voteAverage)} className="film-card__rating">
+          <span>{voteRating}</span>
+        </div>
         <Rate
           className="film-card__stars"
           count={10}
