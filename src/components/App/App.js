@@ -24,13 +24,14 @@ export default class App extends PureComponent {
       pagination: 1,
       paginationRate: 1,
       genre: 0,
+      paginationTopRate: 1,
+      // isTopRatedFilms: true,
     }
 
     this.getSessionId = () => {
       const api = new ApiService()
 
       const guestSessionId = sessionStorage.getItem('tmdbGuestSessionId')
-
       if (!guestSessionId) {
         api
           .createGuestSession()
@@ -44,13 +45,13 @@ export default class App extends PureComponent {
       }
     }
 
-    this.getGenreObj = () => {
+    this.getGenreObj = async () => {
       const api = new ApiService()
       api
         .getGenre()
         .then((response) => {
-          console.log(response)
           this.setState({ genre: response.genres })
+          return response.genres
         })
         .catch(() => this.setState({ isError: true }))
     }
@@ -97,16 +98,32 @@ export default class App extends PureComponent {
     this.sendRequest = (input, current = 1) => {
       this.setState({ filmCards: null, isLoading: true })
       const { sessionId } = this.state
+      if (input === '') {
+        this.setState({ filmCards: null })
+        return
+      }
       const api = new ApiService()
       api
         .getFilms(input, current)
         .then((responce) => {
           if (responce.results.length === 0) {
-            if (input === '') return null
             return <p className="not-found-films">Извините, фильмов с таким названием не найдено</p>
           }
-          console.log('Поисковый запрос')
           return this.createFilmcard(responce, current, sessionId, this.paginationChange)
+        })
+        .then((filmCards) => this.setState({ filmCards, isError: false }))
+        .catch(() => this.setState({ filmCards: null, isError: true }))
+        .finally(() => this.setState({ isLoading: false }))
+    }
+
+    this.sendTopRatedFilmsRequest = (page = 1) => {
+      this.setState({ filmCards: null, isLoading: true })
+      const { sessionId } = this.state
+      const api = new ApiService()
+      api
+        .getTopRatedFilms(page)
+        .then((responce) => {
+          return this.createFilmcard(responce, page, sessionId, this.paginationTopRateChange)
         })
         .then((filmCards) => this.setState({ filmCards, isError: false }))
         .catch(() => this.setState({ filmCards: null, isError: true }))
@@ -150,10 +167,12 @@ export default class App extends PureComponent {
     }
 
     this.debounceSend = debounce(this.sendRequest, 700)
+    this.debounceSendRateFilms = debounce(this.sendTopRatedFilmsRequest, 700)
 
     this.onInputChange = (event) => {
-      this.setState({ input: event.target.value, pagination: 1 })
+      this.setState({ input: event.target.value, pagination: 1, paginationTopRate: 1 })
       this.debounceSend(event.target.value)
+      if (!event.target.value) this.debounceSendRateFilms()
     }
 
     this.paginationChange = (event) => {
@@ -167,10 +186,16 @@ export default class App extends PureComponent {
       this.sendPaginationRateRequest(event)
     }
 
+    this.paginationTopRateChange = (event) => {
+      this.setState({ paginationTopRate: event })
+      this.sendTopRatedFilmsRequest(event)
+    }
+
     this.tabsOnChange = (event) => {
       if (event === '1') {
-        const { input, pagination } = this.state
-        this.sendRequest(input, pagination)
+        const { input, pagination, paginationTopRate } = this.state
+        if (input !== '') this.sendRequest(input, pagination)
+        else this.sendTopRatedFilmsRequest(paginationTopRate)
       }
       if (event === '2') {
         this.sendRateRequest()
@@ -180,7 +205,7 @@ export default class App extends PureComponent {
 
   componentDidMount() {
     this.getSessionId()
-    this.getGenreObj()
+    this.getGenreObj().then(() => this.sendTopRatedFilmsRequest())
   }
 
   render() {

@@ -9,9 +9,30 @@ export default class ApiService {
       const responce = await fetch(url, {
         method: 'GET',
         headers: {
+          accept: 'application/json',
           Authorization:
             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOThhMjU1NGFlODJjNzI1OWIxODMwODZhZDIwYjQ2OSIsInN1YiI6IjY2NGEyM2IwNjRlMzQwODE4Zjc5MTlmNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ljp_uBmt-7JNYlG7g3eIYjJIXP0ynR1UU3BlvTxKGQg',
+        },
+      })
+
+      if (responce.ok) {
+        const objectRespons = await responce.json()
+        return objectRespons
+      }
+      throw new TypeError(responce.status)
+    }
+
+    this.getTopRatedFilms = async (page) => {
+      const url = new URL('/3/movie/top_rated', 'https://api.themoviedb.org')
+      url.searchParams.set('language', 'ru')
+      url.searchParams.set('page', page)
+
+      const responce = await fetch(url, {
+        method: 'GET',
+        headers: {
           accept: 'application/json',
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOThhMjU1NGFlODJjNzI1OWIxODMwODZhZDIwYjQ2OSIsInN1YiI6IjY2NGEyM2IwNjRlMzQwODE4Zjc5MTlmNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ljp_uBmt-7JNYlG7g3eIYjJIXP0ynR1UU3BlvTxKGQg',
         },
       })
 
@@ -28,9 +49,9 @@ export default class ApiService {
       const responce = await fetch(url, {
         method: 'GET',
         headers: {
+          accept: 'application/json',
           Authorization:
             'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyOThhMjU1NGFlODJjNzI1OWIxODMwODZhZDIwYjQ2OSIsInN1YiI6IjY2NGEyM2IwNjRlMzQwODE4Zjc5MTlmNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Ljp_uBmt-7JNYlG7g3eIYjJIXP0ynR1UU3BlvTxKGQg',
-          accept: 'application/json',
         },
       })
 

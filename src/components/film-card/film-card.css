@@ -28,7 +28,7 @@
 .film-card__title {
     margin: 0;
     margin-top: 10px;
-    width: 70%;
+    width: 75%;
     font-family: Inter, Arial, sans-serif;
     font-size: 20px;
     line-height: 28px;
@@ -139,6 +139,6 @@
     }
 
     .film-card__header {
-        width: 70%;
+        width: 60%;
     }
 }
