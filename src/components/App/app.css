@@ -97,7 +97,7 @@ html, body {
     }
 }
 
-@media (min-width: 420px) and (max-width: 720px) {
+@media (min-width: 320px) and (max-width: 720px) {
     .content {
 
         min-width: 100%;

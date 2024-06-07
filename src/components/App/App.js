@@ -21,7 +21,7 @@ export default class App extends PureComponent {
       sessionId: '',
       pagination: 1,
       paginationRate: 1,
-      genre: 0,
+      genre: null,
       paginationTopRate: 1,
     }
 
@@ -201,8 +201,9 @@ export default class App extends PureComponent {
   }
 
   componentDidMount() {
-    this.getSessionId()
-    this.getGenreObj().then(() => this.sendTopRatedFilmsRequest())
+    this.getGenreObj()
+      .then(() => this.sendTopRatedFilmsRequest())
+      .then(() => this.getSessionId())
   }
 
   render() {

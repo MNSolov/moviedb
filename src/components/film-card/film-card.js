@@ -68,18 +68,19 @@ export default class FilmCard extends PureComponent {
             }
           }
         }
-        return j < wordsOverview.length ? `${result.join('\n').trim()}...` : `${result.join('\n').trim()}`
+        return j < wordsOverview.length ? `${result.join(' ').trim()}...` : `${result.join(' ').trim()}`
       }
       return 'Описание фильма отсутствует'
     }
 
     this.onRateChange = (event, filmId) => {
       const { sessionId } = this.props
+
       this.setState({ rating: event })
       const api = new ApiService()
       if (event > 0) {
         api.addRatingMovie(sessionId, filmId, event)
-        sessionStorage.setItem(String(filmId), String(event))
+        sessionStorage.setItem(String(filmId), event.toFixed(1))
       } else {
         api.deleteRatingMovie(sessionId, filmId)
         sessionStorage.removeItem(String(filmId))
@@ -89,7 +90,7 @@ export default class FilmCard extends PureComponent {
     this.firstUpperSymbol = (str) => str.slice(0, 1).toUpperCase() + str.slice(1)
 
     this.createGenreList = (genreArr, genreId) => {
-      if (!genreId && !genreArr) return null
+      if (!genreId || !genreArr) return null
       const result = genreId.map((itemId) => {
         const numberGenreArr = genreArr.findIndex((item) => {
           return item.id === itemId
@@ -102,23 +103,30 @@ export default class FilmCard extends PureComponent {
       })
       return result
     }
+
+    this.addOverview = () => {
+      this.refOverview.current.textContent = this.textOverviewClamp(
+        filmInfo.overView,
+        12,
+        22,
+        this.refOverview.current.getBoundingClientRect().height,
+        this.refOverview.current.getBoundingClientRect().width
+      )
+    }
   }
 
   componentDidMount() {
-    const { filmInfo } = this.props
-    this.refOverview.current.textContent = this.textOverviewClamp(
-      filmInfo.overView,
-      12,
-      22,
-      this.refOverview.current.getBoundingClientRect().height,
-      this.refOverview.current.getBoundingClientRect().width
-    )
+    this.addOverview()
+    window.addEventListener('resize', this.addOverview)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.addOverview)
   }
 
   render() {
     const { filmInfo } = this.props
     const { rating } = this.state
-
     const textHeaderClamp = this.textHeaderClamp(filmInfo.title, 20, 450 * 0.45)
 
     let date = ''
@@ -148,7 +156,8 @@ export default class FilmCard extends PureComponent {
         <Rate
           className="film-card__stars"
           count={10}
-          value={rating}
+          value={Number(rating)}
+          allowHalf
           onChange={(event) => this.onRateChange(event, filmInfo.id)}
         />
       </div>
