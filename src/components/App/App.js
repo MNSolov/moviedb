@@ -15,17 +15,14 @@ export default class App extends PureComponent {
     super()
     this.state = {
       filmCards: [],
-      filmRateCards: [],
       isLoading: false,
       isError: false,
-      // totalResults: 0,
       input: '',
       sessionId: '',
       pagination: 1,
       paginationRate: 1,
       genre: 0,
       paginationTopRate: 1,
-      // isTopRatedFilms: true,
     }
 
     this.getSessionId = () => {
@@ -131,7 +128,7 @@ export default class App extends PureComponent {
     }
 
     this.sendRateRequest = (current = 1) => {
-      this.setState({ filmRateCards: null, isLoading: true })
+      this.setState({ filmCards: null, isLoading: true })
       const { sessionId, paginationRate } = this.state
       const api = new ApiService()
       api
@@ -140,29 +137,29 @@ export default class App extends PureComponent {
           let result = 0
           if (responce.total_pages < paginationRate) {
             result = this.createFilmcard(responce, 1, sessionId, this.paginationRateChange)
-            this.setState({ paginationRate: 1, filmRateCards: result, isLoading: false })
+            this.setState({ paginationRate: 1, filmCards: result, isLoading: false })
           } else {
             api.getRateFilms(sessionId, paginationRate).then((responceRepeat) => {
               result = this.createFilmcard(responceRepeat, paginationRate, sessionId, this.paginationRateChange)
-              this.setState({ filmRateCards: result, isError: false })
+              this.setState({ filmCards: result, isError: false })
             })
           }
         })
-        .catch(() => this.setState({ filmRateCards: null }))
+        .catch(() => this.setState({ filmCards: null }))
         .finally(() => this.setState({ isLoading: false }))
     }
 
     this.sendPaginationRateRequest = (current) => {
-      this.setState({ filmRateCards: null, isLoading: true })
+      this.setState({ filmCards: null, isLoading: true })
       const { sessionId } = this.state
       const api = new ApiService()
       api
         .getRateFilms(sessionId, current)
         .then((responce) => {
           const result = this.createFilmcard(responce, current, sessionId, this.paginationRateChange)
-          this.setState({ filmRateCards: result, isError: false })
+          this.setState({ filmCards: result, isError: false })
         })
-        .catch(() => this.setState({ filmRateCards: null }))
+        .catch(() => this.setState({ filmCards: null }))
         .finally(() => this.setState({ isLoading: false }))
     }
 
@@ -209,14 +206,13 @@ export default class App extends PureComponent {
   }
 
   render() {
-    const { filmCards, filmRateCards, isLoading, isError, genre } = this.state
+    const { filmCards, isLoading, isError, genre } = this.state
 
     const spin = isLoading ? <Spin className="spin" size="large" /> : null
     const errorMessage = isError ? (
       <Error>Не удается получить информацию от сервера! Видимо возникла ошибка</Error>
     ) : null
     const films = !(isLoading && isError) ? filmCards : null
-    const filmsRate = !(isLoading && isError) ? filmRateCards : null
 
     const items = [
       {
@@ -240,7 +236,7 @@ export default class App extends PureComponent {
         label: 'Rate',
         children: (
           <section className="tabs__content">
-            {filmsRate}
+            {films}
             {spin}
             {errorMessage}
           </section>

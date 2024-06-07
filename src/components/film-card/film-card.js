@@ -15,7 +15,6 @@ export default class FilmCard extends PureComponent {
 
     this.state = { rating: filmInfo.rating }
 
-    this.refHeader = React.createRef()
     this.refOverview = React.createRef()
 
     this.borderColor = (rating) => {
@@ -135,7 +134,7 @@ export default class FilmCard extends PureComponent {
     return (
       <div className="film-card">
         <img className="film-card__image" src={imgPath} alt="Poster" />
-        <div className="film-card__header" ref={this.refHeader}>
+        <div className="film-card__header">
           <h5 className="film-card__title">{textHeaderClamp}</h5>
           <p className="film-card__release">{date}</p>
           <Consumer>

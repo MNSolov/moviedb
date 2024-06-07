@@ -51,18 +51,12 @@ html, body {
 .pagination {
     margin-left: auto;
     margin-right: auto;
-
-    /*padding-left: 50px;
-    padding-right: 50px;*/
 }
 
 .pagination-wrapper {
 
     width: 100%;
     display: flex;
-
-    /*padding-left: 50px;
-    padding-right: 50px;*/
 }
 
 .not-found-films {
