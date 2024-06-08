@@ -1,0 +1,1 @@
+https://moviedb-app-bay.vercel.app/
