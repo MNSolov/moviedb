@@ -115,8 +115,8 @@ export default class FilmCard extends PureComponent {
       const overviewWidth = this.refOverview.current.getBoundingClientRect().width
 
       if (cardHeight > imageHeight)
-        overviewHeight = imageHeight > headerHeight ? cardHeight - imageHeight : cardHeight - headerHeight
-      else overviewHeight = cardHeight - headerHeight - 50
+        overviewHeight = imageHeight > headerHeight ? cardHeight - imageHeight - 20 : cardHeight - headerHeight - 20
+      else overviewHeight = cardHeight - headerHeight - 30
 
       this.refOverview.current.textContent = this.textOverviewClamp(
         filmInfo.overView,
