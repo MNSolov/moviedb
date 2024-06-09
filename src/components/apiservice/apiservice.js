@@ -107,7 +107,6 @@ export default class ApiService {
 
     this.getRateFilms = async (sessionId, current) => {
       const url = new URL(`/3/guest_session/${sessionId}/rated/movies`, 'https://api.themoviedb.org')
-      url.searchParams.set('guest_session_id', sessionId)
       url.searchParams.set('language', 'ru')
       url.searchParams.set('page', current)
 
